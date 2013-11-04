@@ -5,7 +5,7 @@ furnace.actions furnace.alloy furnace.auth furnace.auth.basic
 furnace.auth.features.registration furnace.auth.providers
 furnace.json html.forms http.server http.server.dispatchers
 http.server.responses io.servers io.sockets.secure kernel
-namespaces validators logging io sets vectors continuations ;
+namespaces validators logging io sets vectors continuations sequences ;
 IN: FriendPaper
 
 LOG: current-username DEBUG
@@ -28,10 +28,11 @@ LOG: register-regid DEBUG
 
 LOG: paired-username DEBUG
 LOG: paired-user-ids DEBUG
+LOG: current-user-ids DEBUG
 : paired-regid ( -- ids )
-  "pair-username" uget dup paired-username
-  users get-user profile>>
-  "regid" of dup paired-user-ids ;
+  "pair-username" uget dup paired-username users get-user
+   profile>> "regid" of dup paired-user-ids
+   profile   "regid" of dup current-user-ids append ;
 
 LOG: gcm-response DEBUG
 LOG: gcm-error ERROR
