@@ -13,7 +13,7 @@ LOG: register-regid DEBUG
 : log-current-user ( -- ) logged-in-user get username>> current-username ;
 
 : ?vector-adjoin ( elt set/f -- set' )
-    [ 1 <vector> ] unless* [ adjoin ] keep ;
+  [ 1 <vector> ] unless* [ adjoin ] keep ;
 : uadjoin ( value key -- ) [ ?vector-adjoin ] with uchange ;
 : register-id-submit ( -- response )
   log-current-user
@@ -80,30 +80,30 @@ USING: db.sqlite furnace.alloy namespaces ;
 : friend-paper-db ( -- db ) "resource:friend-paper.db" <sqlite-db> ;
 
 : <auth-config> ( responder -- responder' )
-    "FriendPaper" <basic-auth-realm>
-        allow-registration ;
+  "FriendPaper" <basic-auth-realm>
+    allow-registration ;
 
 : <friend-paper-secure-config> ( -- config )
-    ! This is only suitable for testing!
-    <secure-config>
-        "vocab:openssl/test/dh1024.pem" >>dh-file
-        "vocab:openssl/test/server.pem" >>key-file
-        "password" >>password ;
+  ! This is only suitable for testing!
+  <secure-config>
+    "vocab:openssl/test/dh1024.pem" >>dh-file
+    "vocab:openssl/test/server.pem" >>key-file
+    "password" >>password ;
 
 : <friend-paper-app> ( -- responder )
-    <friend-paper-dispatcher>
-        <auth-config>
-        friend-paper-db <alloy> ;
+  <friend-paper-dispatcher>
+    <auth-config>
+    friend-paper-db <alloy> ;
 
 : <friend-paper-website-server> ( -- threaded-server )
-    <http-server>
-       <friend-paper-secure-config> >>secure-config
-       8080 >>insecure
-       8431 >>secure ;
+  <http-server>
+    <friend-paper-secure-config> >>secure-config
+    8080 >>insecure
+    8431 >>secure ;
 
 : run-friend-paper ( -- )
-    <friend-paper-app> main-responder set-global
-    friend-paper-db start-expiring
-    <friend-paper-website-server> start-server drop ;
+  <friend-paper-app> main-responder set-global
+  friend-paper-db start-expiring
+  <friend-paper-website-server> start-server drop ;
 
 MAIN: run-friend-paper
