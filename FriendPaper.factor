@@ -8,61 +8,62 @@ http.server.responses io.servers io.sockets.secure kernel
 namespaces validators logging io sets vectors continuations ;
 IN: FriendPaper
 
-LOG: log-value DEBUG
+LOG: current-username DEBUG
+LOG: register-regid DEBUG
+: log-current-user ( -- ) logged-in-user get username>> current-username ;
+
 : ?vector-adjoin ( elt set/f -- set' )
     [ 1 <vector> ] unless* [ adjoin ] keep ;
 : uadjoin ( value key -- ) [ ?vector-adjoin ] with uchange ;
+: register-id-submit ( -- response )
+  log-current-user
+  "regid" [ value dup register-regid ] [ uadjoin ] bi
+  t <json-content> ;
+: register-id-validate ( -- )
+  { { "regid" [ v-required ] } } validate-params ;
 : <register-id-action> ( -- action )
   <action>
-    [
-      { { "regid" [ v-required ] } } validate-params
-    ] >>validate
-
-    [
-      "regid" [ value dup log-value ] [ uadjoin ] bi
-      t <json-content>
-    ] >>submit  ;
+    [ register-id-validate ] >>validate
+    [ register-id-submit ] >>submit  ;
 
 LOG: paired-username DEBUG
-LOG: luser-profile DEBUG
-LOG: user-ids DEBUG
+LOG: paired-user-ids DEBUG
 : paired-regid ( -- ids )
-    "pair-username" uget dup paired-username
-    users get-user profile>> dup luser-profile
-    "regid" of dup user-ids ;
+  "pair-username" uget dup paired-username
+  users get-user profile>>
+  "regid" of dup paired-user-ids ;
 
-LOG: log-response DEBUG
+LOG: gcm-response DEBUG
 LOG: gcm-error ERROR
 : send-submit ( -- response )
+  log-current-user
   "url" value paired-regid
-  [ gcm-send log-response t <json-content> ]
+  [ gcm-send gcm-response t <json-content> ]
   [ gcm-error 2drop <400> ] recover ;
+: send-validate ( -- )
+  { { "url" [ v-url ] } } validate-params ;
 : <send-action> ( -- action )
   <action>
-    [
-      { { "url" [ v-url ] } } validate-params
-    ] >>validate
-    
+    [ send-validate ] >>validate
     [ send-submit ] >>submit  ;
 
 : (pair-users) ( userA userB -- userA userB' )
   [ [ username>> "pair-username" ] [ profile>> ] bi* set-at ] 2keep ;
-
 : users-changed ( userA userB -- )
   [ t swap changed?<< ] bi@ ;
 : pair-users ( userA userB -- )
     (pair-users) swap (pair-users) users-changed ;
 : pair-submit ( -- response )
-  "pair-username" value users get-user
+  log-current-user
+  "pair-username" value dup paired-username users get-user
   logged-in-user get 2dup or [
     pair-users t <json-content>
   ] [ 2drop <400> ] if ;
+: pair-validate ( -- )
+  { { "pair-username" [ v-username ] } } validate-params ;
 : <pair-action> ( -- action )
   <action>
-    [
-      { { "pair-username" [ v-username ] } } validate-params
-    ] >>validate
-    
+    [ pair-validate ] >>validate
     [ pair-submit ] >>submit ;
 
 TUPLE: friend-paper-app < dispatcher ;
