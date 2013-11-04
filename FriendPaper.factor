@@ -97,6 +97,7 @@ USING: db.sqlite furnace.alloy namespaces ;
 
 : <friend-paper-website-server> ( -- threaded-server )
   <http-server>
+    "FriendPaper" >>name
     <friend-paper-secure-config> >>secure-config
     8080 >>insecure
     8431 >>secure ;
