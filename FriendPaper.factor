@@ -1,11 +1,11 @@
 ! Copyright (C) 2013 Jon Harper.
 ! See http://factorcode.org/license.txt for BSD license.
-USING: FriendPaper.gcm accessors assocs db db.sqlite db.tuples db.types
+USING: FriendPaper.gcm accessors assocs continuations db.sqlite
 furnace.actions furnace.alloy furnace.auth furnace.auth.basic
 furnace.auth.features.registration furnace.auth.providers
 furnace.json html.forms http.server http.server.dispatchers
 http.server.responses io.servers io.sockets.secure kernel
-namespaces validators logging io sets vectors continuations sequences ;
+logging namespaces sequences sets validators vectors ;
 IN: FriendPaper
 
 LOG: current-username DEBUG
