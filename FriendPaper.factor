@@ -67,11 +67,17 @@ LOG: gcm-error ERROR
     [ pair-validate ] >>validate
     [ pair-submit ] >>submit ;
 
+: nop-display ( -- response ) t <json-content> ;
+: <check-action> ( -- action )
+  <action>
+    [ nop-display ] >>display ;
+
 TUPLE: friend-paper-app < dispatcher ;
 : <friend-paper-dispatcher> ( -- responder )
     friend-paper-app new-dispatcher
         <register-id-action> "register-id" add-responder
         <pair-action> "pair" add-responder
+        <check-action> "check" add-responder
         <send-action> "send" add-responder <protected> ;
 
 ! Deployment example
