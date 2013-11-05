@@ -15,7 +15,6 @@ CONSTANT: GCM-SEND-URL URL" https://android.googleapis.com/gcm/send"
 : prepare-gcm-data ( url ids -- hash ) 
   [ prepare-data ] dip H{ } clone
     [ "registration_ids" ] dip build-assoc
-    [ t "dry_run" ] dip build-assoc
     [ "data" ] dip build-assoc ;
 
 : gcm-post-data ( url ids -- post-data )

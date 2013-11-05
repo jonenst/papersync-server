@@ -32,7 +32,7 @@ LOG: current-user-ids DEBUG
 : paired-regid ( -- ids )
   "pair-username" uget dup paired-username users get-user
    profile>> "regid" of dup paired-user-ids
-   profile   "regid" of dup current-user-ids append ;
+   profile   "regid" of dup current-user-ids union ;
 
 LOG: gcm-response DEBUG
 LOG: gcm-error ERROR
