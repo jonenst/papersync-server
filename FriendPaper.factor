@@ -56,8 +56,8 @@ LOG: gcm-error ERROR
     (pair-users) swap (pair-users) users-changed ;
 : pair-submit ( -- response )
   log-current-user
-  "pair-username" value dup paired-username users get-user
-  logged-in-user get 2dup or [
+  "pair-username" value dup paired-username users get-user dup [ save-user-after ] when*
+  logged-in-user get 2dup and [
     pair-users t <json-content>
   ] [ 2drop <400> ] if ;
 : pair-validate ( -- )
