@@ -1,12 +1,12 @@
 ! Copyright (C) 2013 Jon Harper.
 ! See http://factorcode.org/license.txt for BSD license.
-USING: FriendPaper.gcm accessors assocs continuations db.sqlite
+USING: papersync-server.gcm accessors assocs continuations db.sqlite
 furnace.actions furnace.alloy furnace.auth furnace.auth.basic
 furnace.auth.features.registration furnace.auth.providers
 furnace.json html.forms http.server http.server.dispatchers
 http.server.responses io.servers io.sockets.secure kernel
 logging namespaces sequences sets validators vectors ;
-IN: FriendPaper
+IN: papersync-server
 
 LOG: current-username DEBUG
 LOG: register-regid DEBUG
@@ -72,9 +72,9 @@ LOG: gcm-error ERROR
   <action>
     [ nop-display ] >>display ;
 
-TUPLE: friend-paper-app < dispatcher ;
-: <friend-paper-dispatcher> ( -- responder )
-    friend-paper-app new-dispatcher
+TUPLE: papersync-app < dispatcher ;
+: <papersync-dispatcher> ( -- responder )
+    papersync-app new-dispatcher
         <register-id-action> "register-id" add-responder
         <pair-action> "pair" add-responder
         <check-action> "check" add-responder
@@ -83,34 +83,34 @@ TUPLE: friend-paper-app < dispatcher ;
 ! Deployment example
 USING: db.sqlite furnace.alloy namespaces ;
 
-: friend-paper-db ( -- db ) "resource:friend-paper.db" <sqlite-db> ;
+: papersync-db ( -- db ) "resource:papersync.db" <sqlite-db> ;
 
 : <auth-config> ( responder -- responder' )
-  "FriendPaper" <basic-auth-realm>
+  "papersync" <basic-auth-realm>
     allow-registration ;
 
-: <friend-paper-secure-config> ( -- config )
+: <papersync-secure-config> ( -- config )
   ! This is only suitable for testing!
   <secure-config>
     "vocab:openssl/test/dh1024.pem" >>dh-file
     "vocab:openssl/test/server.pem" >>key-file
     "password" >>password ;
 
-: <friend-paper-app> ( -- responder )
-  <friend-paper-dispatcher>
+: <papersync-app> ( -- responder )
+  <papersync-dispatcher>
     <auth-config>
-    friend-paper-db <alloy> ;
+    papersync-db <alloy> ;
 
-: <friend-paper-website-server> ( -- threaded-server )
+: <papersync-website-server> ( -- threaded-server )
   <http-server>
-    "FriendPaper" >>name
-    <friend-paper-secure-config> >>secure-config
+    "papersync" >>name
+    <papersync-secure-config> >>secure-config
     8080 >>insecure
     8431 >>secure ;
 
-: run-friend-paper ( -- )
-  <friend-paper-app> main-responder set-global
-  friend-paper-db start-expiring
-  <friend-paper-website-server> start-server drop ;
+: run-papersync ( -- )
+  <papersync-app> main-responder set-global
+  papersync-db start-expiring
+  <papersync-website-server> start-server drop ;
 
-MAIN: run-friend-paper
+MAIN: run-papersync

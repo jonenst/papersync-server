@@ -3,7 +3,7 @@
 USING: accessors assocs http http.client io.encodings.string
 io.encodings.utf8 io.sockets.secure json.reader json.writer
 kernel math sequences urls ;
-IN: FriendPaper.gcm
+IN: papersync-server.gcm
 
 CONSTANT: API-KEY "key=YOURKEY"
 CONSTANT: GCM-SEND-URL URL" https://android.googleapis.com/gcm/send"
