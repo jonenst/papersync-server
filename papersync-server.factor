@@ -5,7 +5,7 @@ furnace.actions furnace.alloy furnace.auth furnace.auth.basic
 furnace.auth.features.registration furnace.auth.providers
 furnace.json html.forms http.server http.server.dispatchers
 http.server.responses io.servers io.sockets.secure kernel
-logging namespaces sequences sets validators vectors ;
+logging namespaces sequences sets validators vectors papersync-server.conf ;
 IN: papersync-server
 
 LOG: current-username DEBUG
@@ -80,7 +80,6 @@ TUPLE: papersync-app < dispatcher ;
         <check-action> "check" add-responder
         <send-action> "send" add-responder <protected> ;
 
-! Deployment example
 USING: db.sqlite furnace.alloy namespaces ;
 
 : papersync-db ( -- db ) "resource:papersync.db" <sqlite-db> ;
@@ -90,11 +89,10 @@ USING: db.sqlite furnace.alloy namespaces ;
     allow-registration ;
 
 : <papersync-secure-config> ( -- config )
-  ! This is only suitable for testing!
   <secure-config>
-    "vocab:openssl/test/dh1024.pem" >>dh-file
-    "vocab:openssl/test/server.pem" >>key-file
-    "password" >>password ;
+     DH-FILE  >>dh-file
+     KEY-FILE >>key-file
+     PASSWORD >>password ;
 
 : <papersync-app> ( -- responder )
   <papersync-dispatcher>
@@ -105,8 +103,8 @@ USING: db.sqlite furnace.alloy namespaces ;
   <http-server>
     "papersync" >>name
     <papersync-secure-config> >>secure-config
-    8080 >>insecure
-    8431 >>secure ;
+    INSECURE-PORT >>insecure
+    SECURE-PORT   >>secure ;
 
 : run-papersync ( -- )
   <papersync-app> main-responder set-global

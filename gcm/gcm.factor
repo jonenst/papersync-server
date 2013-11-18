@@ -2,10 +2,9 @@
 ! See http://factorcode.org/license.txt for BSD license.
 USING: accessors assocs http http.client io.encodings.string
 io.encodings.utf8 io.sockets.secure json.reader json.writer
-kernel math sequences urls ;
+kernel math sequences urls papersync-server.conf ;
 IN: papersync-server.gcm
 
-CONSTANT: API-KEY "key=YOURKEY"
 CONSTANT: GCM-SEND-URL URL" https://android.googleapis.com/gcm/send"
 
 : build-assoc ( value key assoc -- assoc' ) [ set-at ] keep ; inline
@@ -27,7 +26,7 @@ CONSTANT: GCM-SEND-URL URL" https://android.googleapis.com/gcm/send"
   
 : (gcm-send) ( post-data -- response-data ) 
   GCM-SEND-URL <post-request>
-    API-KEY "Authorization" set-header
+    GCM-API-KEY "Authorization" set-header
   http-request nip json> ;
 : gcm-test-send ( -- response ) gcm-test-data (gcm-send) ;
 
